@@ -1,0 +1,250 @@
+     A*                            |||||||
+     A*                           ( o   o )
+     A* ----------------------oOO----(_)----OOo-------------------------- */
+     A* Display file: RTVDBGSRCD                                          */
+     A* Description.: Display file for RTVDBGSRCR program.                */
+     A* Author .....: ortizmartin.miguel@gmail.com                        */
+     A* Date .......:   /01/2026                                          */
+     A* ----------------------------------------------------------------- */
+     A                                      DSPSIZ(24 80 *DS3)
+     A                                      INDARA
+     A                                      PRINT
+     A                                      HELP
+     A                                      ALTHELP(CA01)
+     A*
+     A          R DUMMY                     ASSUME
+     A                                  2  2' '
+     A*
+     A* Define window(s)
+     A          R WIN01D                    WINDOW(2 2 20 74 *NOMSGLIN)
+     A                                      WDWTITLE((*TEXT &W01TITLE) +
+     A                                               (*COLOR WHT) *CENTER)
+     A                                      OVERLAY
+     A            W01TITLE      45A  P
+     A*
+     A          R WIN03D                    WINDOW(8 2 14 74 *NOMSGLIN)
+     A                                      WDWTITLE((*TEXT &W03TITLE) +
+     A                                               (*COLOR WHT) *CENTER)
+     A                                      OVERLAY
+     A            W03TITLE      45A  P
+     A*
+     A* Select View
+     A          R WIN01S                    SFL
+     A  75                                  SFLNXTCHG
+     A            H01VIEWID     10Y 0H
+     A            H01VIEWTYP    10A  H
+     A            S01OPTION      1A  B 10  3
+     A N31                                  DSPATR(UL HI)
+     A  31                                  DSPATR(RI PC)
+     A            S01MODULE     10A  O 10  7
+     A            S01VIEWDES    50A  O 10 19
+     A*
+     A          R WIN01C                    SFLCTL(WIN01S)
+     A                                      WINDOW(WIN01D)
+     A                                      OVERLAY
+     A                                      CA03(03 'Exit' )
+     A                                      CA05(05 'Refresh' )
+     A                                      CA21(21 'Command line' )
+     A  70 71                               SFLDSP
+     A  70                                  SFLDSPCTL
+     A  72                                  SFLCLR
+     A  73                                  SFLEND(*MORE)
+     A                                      SFLSIZ(0056)
+     A                                      SFLPAG(0008)
+     A                                      SFLCSRRRN(&S01CSRRRN)
+     A  71        S01RCDNBR      4S 0H      SFLRCDNBR(CURSOR)
+     A            S01CSRRRN      5S 0H
+     A*
+     A                                  2  2'Programa . . . . . :'
+     A                                      COLOR(BLU)
+     A            C01PGM        21A  O  2 23DSPATR(HI)
+     A                                  3  2'Number of modules  :'
+     A                                      COLOR(BLU)
+     A            C01MODS        5Y 0O  3 23DSPATR(HI)
+     A                                      EDTCDE(4)
+     A                                  4  2'Number of views  . :'
+     A                                      COLOR(BLU)
+     A            C01VIEWS       5Y 0O  4 23DSPATR(HI)
+     A                                      EDTCDE(4)
+     A*
+     A                                  6  2'Escriba una opciones, pulse Intro.'
+     A                                      COLOR(BLU)
+     A                                  7  4'1=Select'
+     A                                      COLOR(BLU)
+     A                                  7 14'5=Display'
+     A                                      COLOR(BLU)
+     A                                  7 25'6=Print'
+     A                                      COLOR(BLU)
+     A                                  9  2'Opt'
+     A                                      DSPATR(HI)
+     A                                  9  7'Module'
+     A                                      DSPATR(HI)
+     A                                  9 19'View'
+     A                                      DSPATR(HI)
+     A*
+     A          R WIN01K                    WINDOW(WIN01D)
+     A                                 19  2'F3=Exit'
+     A                                      COLOR(BLU)
+     A                                 19 12'F5=Refresh'
+     A                                      COLOR(BLU)
+     A                                 19 25'F21=Command line'
+     A                                      COLOR(BLU)
+     A*
+     A* Display Module Source
+     A          R PNL02S                    SFL
+     A            H02TXT       140A  H
+     A            S02SEQ         6A  O  4  2
+     A            S02TXT        70A  O  4 10
+     A*
+     A          R PNL02C                    SFLCTL(PNL02S)
+     A                                      SFLSIZ(0999)
+     A                                      SFLPAG(0015)
+     A  80 81                               SFLDSP
+     A  80                                  SFLDSPCTL
+     A  82                                  SFLCLR
+     A  83                                  SFLEND(*MORE)
+     A                                      SFLCSRRRN(&S02CSRRRN)
+     A  81        S02RCDNBR      4S 0H      SFLRCDNBR(*TOP)
+     A            S02CSRRRN      5S 0H
+     A                                  1 30'Display Module Source'
+     A                                      DSPATR(HI)
+     A*
+     A                                  3  2'Program:'
+     A                                      COLOR(BLU)
+     A            C02PGM        10A  O  3 13DSPATR(HI)
+     A*
+     A                                  3 27'Library:'
+     A                                      COLOR(BLU)
+     A            C02LIB        10A  O  3 38DSPATR(HI)
+     A*
+     A                                  3 58'Module:'
+     A                                      COLOR(BLU)
+     A            C02MOD        10A  O  3 67DSPATR(HI)
+     A*
+     A          R PNL02NOSRC                OVERLAY
+     A            W02NOSRC      70A  O  5  4DSPATR(HI)
+     A*
+     A          R PNL02K                    OVERLAY
+     A                                      CSRLOC(K02LIN K02POS)
+     A                                      CA03(03 'Exit' )
+     A                                      CA05(05 'Refresh' )
+     A                                      CA12(12 'Cancel')
+     A                                      CA16(16 'Find next')
+     A                                      CA19(19 'Left')
+     A                                      CA20(20 'Right')
+     A                                      CA21(21 'Command line' )
+     A            K02LIN         3Y 0H
+     A            K02POS         3Y 0H
+     A                                 20  2'Debug . . .  '
+     A                                      COLOR(BLU)
+     A            K02CMD       140A  B 20 16CHECK(LC)
+     A N31                                  DSPATR(UL HI)
+     A  31                                  DSPATR(RI PC)
+     A                                 22  2'F3=Exit'
+     A                                      COLOR(BLU)
+     A                                 22 12'F5=Refresh'
+     A                                      COLOR(BLU)
+     A                                 22 25'F16=Find next'
+     A                                      COLOR(BLU)
+     A                                 22 41'F19=Left'
+     A                                      COLOR(BLU)
+     A                                 22 52'F20=Right'
+     A                                      COLOR(BLU)
+     A                                 23  2'F21=Command line'
+     A                                      COLOR(BLU)
+     A                                 23 25'F12=Cancel'
+     A                                      COLOR(BLU)
+     A*
+     A* Select Source File and Member to Copy to
+     A          R WIN03                     WINDOW(WIN03D)
+     A                                      OVERLAY
+     A                                      CA03(03 'Exit' )
+     A                                      CA05(05 'Refresh' )
+     A                                      CA12(12 'Cancel')
+     A                                      CA21(21 'Command line' )
+     A*
+     A                                  2  2'Program . . . . . .'
+     A                                      COLOR(BLU)
+     A            W03PGM        10A  O  2 22DSPATR(HI)
+     A                                  3  4'Library . . . . .'
+     A                                      COLOR(BLU)
+     A            W03LIB        10A  O  3 24DSPATR(HI)
+     A                                  4  2'Module  . . . . . .'
+     A                                      COLOR(BLU)
+     A            W03MOD        10A  O  4 22DSPATR(HI)
+     A*
+     A                                  6  2'To source file  . .'
+     A                                      COLOR(BLU)
+     A            W03SRCF       10A  B  6 22
+     A N31                                  DSPATR(UL HI)
+     A  31                                  DSPATR(RI PC)
+     A                                  7  4'Library . . . . .'
+     A                                      COLOR(BLU)
+     A            W03SRCL       10A  B  7 24
+     A N32                                  DSPATR(UL HI)
+     A  32                                  DSPATR(RI PC)
+     A                                  8  2'To source member  .'
+     A                                      COLOR(BLU)
+     A            W03SRCM       10A  B  8 22
+     A N33                                  DSPATR(UL HI)
+     A  33                                  DSPATR(RI PC)
+     A*
+     A                                 13  2'F3=Exit'
+     A                                      COLOR(BLU)
+     A                                 13 12'F5=Renovar'
+     A                                      COLOR(BLU)
+     A                                 13 25'F21=Command line'
+     A                                      COLOR(BLU)
+     A                                 13 44'F12=Cancel'
+     A                                      COLOR(BLU)
+     A                                 13 36'F21=Command line'
+     A                                      COLOR(BLU)
+     A*
+     A* Display Errors [WIN01]
+     A          R ERR01S                    SFL
+     A                                      SFLMSGRCD(20)
+     A            MSGKEY                    SFLMSGKEY
+     A            PGMNAME                   SFLPGMQ
+     A          R ERR01C                    SFLCTL(ERR01S)
+     A                                      WINDOW(WIN01D)
+     A  70                                  OVERLAY
+     A  99                                  SFLDSP
+     A                                      SFLDSPCTL
+     A                                      SFLINZ
+     A N99                                  SFLCLR
+     A  99                                  SFLEND
+     A                                      SFLSIZ(0002)
+     A                                      SFLPAG(0001)
+     A            PGMNAME                   SFLPGMQ
+     A*
+     A* Display Errors [SFL02]
+     A          R ERR02S                    SFL
+     A                                      SFLMSGRCD(24)
+     A            MSGKEY                    SFLMSGKEY
+     A            PGMNAME                   SFLPGMQ
+     A          R ERR02C                    SFLCTL(ERR02S)
+     A  80                                  OVERLAY
+     A  99                                  SFLDSP
+     A                                      SFLDSPCTL
+     A                                      SFLINZ
+     A N99                                  SFLCLR
+     A  99                                  SFLEND
+     A                                      SFLSIZ(0002)
+     A                                      SFLPAG(0001)
+     A            PGMNAME                   SFLPGMQ
+     A*
+     A* Display Errors [WIN0] 
+     A          R ERR03S                    SFL
+     A                                      SFLMSGRCD(14)
+     A            MSGKEY                    SFLMSGKEY
+     A            PGMNAME                   SFLPGMQ
+     A          R ERR03C                    SFLCTL(ERR03S)
+     A                                      WINDOW(WIN03D)
+     A  99                                  SFLDSP
+     A                                      SFLDSPCTL
+     A                                      SFLINZ
+     A N99                                  SFLCLR
+     A  99                                  SFLEND
+     A                                      SFLSIZ(0002)
+     A                                      SFLPAG(0001)
+     A            PGMNAME                   SFLPGMQ
