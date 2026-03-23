@@ -1,0 +1,101 @@
+/*                            |||||||                                */
+/*                           ( o   o )                               */
+/* ----------------------oOO----(_)----OOo-------------------------- */
+/* Program ....: RTVDBGSRCC                                          */
+/* Description.: CPP for RTVDBGSRC command.                          */
+/* Author .....: ortizmartin.miguel@gmail.com                        */
+/* Date .......:   /01/2026                                          */
+/* ----------------------------------------------------------------- */
+pgm ( &Object &ObjType)
+
+Dcl   &Object  *Char  20
+Dcl   &obj     *Char  10  Stg( *Defined ) DefVar( &Object   1 )
+Dcl   &lib     *Char  10  Stg( *Defined ) DefVar( &Object  11 )
+Dcl   &ObjType *Char  10
+
+Dcl   &MsgId   *Char   7
+Dcl   &MsgF    *Char  10   Value( 'QCPFMSG' )
+Dcl   &MsgDta  *Char 256
+
+Dcl   &ObjDesc      *Char  90
+Dcl   &bytesRetrn   *Int    4  Stg( *Defined ) DefVar( &ObjDesc   1 )
+Dcl   &bytesAvail   *Int    4  Stg( *Defined ) DefVar( &ObjDesc   5 )
+Dcl   &RetrnObjNm   *Char  10  Stg( *Defined ) DefVar( &ObjDesc   9 )
+Dcl   &RetrnObjLb   *Char  10  Stg( *Defined ) DefVar( &ObjDesc  19 )
+Dcl   &RetrnObjTp   *Char  10  Stg( *Defined ) DefVar( &ObjDesc  29 )
+Dcl   &rtnLibName   *Char  10  Stg( *Defined ) DefVar( &ObjDesc  39 )
+Dcl   &ObjDescSiz   *Int    4  Value( 90 )
+Dcl   &ObjTypeOk    *Lgl
+
+Dcl   &ApiErrCde    *Char 256
+Dcl   &ExceptProv   *Int    4  Stg( *Defined ) DefVar( &ApiErrCde  1 )
+Dcl   &ExceptAvai   *Int    4  Stg( *Defined ) DefVar( &ApiErrCde  5 )
+Dcl   &ExceptId     *Char   7  Stg( *Defined ) DefVar( &ApiErrCde  9 )
+Dcl   &Reserved     *Char   1  Stg( *Defined ) DefVar( &ApiErrCde 16 )
+Dcl   &ExceptData   *Char 240  Stg( *Defined ) DefVar( &ApiErrCde 17 )
+
+
+CallSubR ChkObjType
+if     ( &ObjTypeOk *Ne '1' )  Then( Do )
+         CallSubR  ReSndMsgs
+         GoTo      CmdLbl( Exit )
+         EndDo
+
+CrtDtaAra  DtaAra(qTemp/ZTeObjType) Type( *Char ) Len( 10 ) Value( &ObjType )
+monmsg     Cpf1000 Exec( Do )
+           RcvMsg     MsgQ( *PgmQ ) MsgType( *Excp )
+           ChgDtaAra  DtaAra(qTemp/ZTeObjType) Value( &ObjType )
+           EndDo
+RcvMsg     MsgQ( *PgmQ ) MsgType( *Comp )
+
+Select
+  When ( &ObjType  = '*PGM' ) Then( Do )
+         StrDbg    Pgm(&lib/&obj)    SrcDbgPgm( mortizm/RtvDbgSrcR ) UpdProd(*Yes)
+         monMsg    Cpf0000     Exec( CallSubR     SubR( ReSndMsgs ))
+         EndDo
+  When ( &ObjType  = '*SRVPGM' ) Then( Do )
+         StrDbg    SrvPgm(&lib/&obj) SrcDbgPgm( mortizm/RtvDbgSrcR ) UpdProd(*Yes)
+         monMsg    Cpf0000     Exec( CallSubR     SubR( ReSndMsgs ))
+         EndDo
+EndSelect
+
+/* DspModSrc */
+DltDtaAra  DtaAra(qTemp/ZTeObjType)
+RcvMsg     MsgQ( *PgmQ ) MsgType( *Comp )
+EndDbg
+
+
+SubR  ChkObjType
+
+   Call QUSROBJD ( &objDesc &ObjDescSiz 'OBJD0100' &Object &ObjType &ApiErrCde )
+   If   ( &ExceptId *Ne ' ' )  Then( Do )
+        SndPgmMsg MsgId( &ExceptId ) MsgF( &MsgF ) MsgDta( &ExceptData ) +
+                                    ToPgmQ( *PRV ) MsgType( *Diag )
+        EndDo
+   Else Cmd( ChgVar  &ObjTypeOk Value( '1' ))
+EndSubR
+
+SubR  ReSndMsgs
+
+   DoUntil   ( &MsgID *Eq ' ' )
+
+        RcvMsg  MsgType( *Diag ) MsgId( &MsgId ) MsgF( &MsgF ) +
+                                               MsgDta( &MsgDta )
+        If   ( &MsgID *Eq ' ' ) Then( Leave )
+
+        SndPgmMsg MsgId( &MsgId ) MsgF( &MsgF ) MsgDta( &MsgDta ) +
+                                  ToPgmQ( *PRV ) MsgType( *Diag )
+        EndDo
+
+   DoUntil   ( &MsgID *Eq ' ' )
+
+        RcvMsg    MsgType( *Excp ) MsgId( &MsgId ) MsgF( &MsgF ) +
+                                               MsgDta( &MsgDta )
+        If     ( &MsgID *Eq ' ' )  Then( Leave )
+
+        SndPgmMsg MsgId( &MsgId ) MsgF( &MsgF ) MsgDta( &MsgDta ) +
+                                  ToPgmQ( *PRV ) MsgType( *Escape )
+        EndDo
+EndSubR
+
+Exit:  EndPgm

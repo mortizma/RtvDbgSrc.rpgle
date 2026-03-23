@@ -1,0 +1,38 @@
+# IBM i specific
+*.SAVF
+*.savf
+*.SPOOL
+*.spool
+*.MSGQ
+*.msgq
+
+# Build artifacts
+*.PGM
+*.pgm
+*.SRVPGM
+*.srvpgm
+*.MODULE
+*.module
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# IDE specific
+.vscode/
+.idea/
+*.code-workspace
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Backup files
+*.bak
+*.backup
